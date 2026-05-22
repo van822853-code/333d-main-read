@@ -9,6 +9,34 @@ interface WorkDraft {
 }
 
 const emptyWork = (): WorkDraft => ({ url: '', cover: null, preview: '' });
+const MAX_COVER_EDGE = 1280;
+
+async function compressCover(file: File) {
+  const image = new Image();
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('封面图片读取失败'));
+      image.src = objectUrl;
+    });
+
+    const scale = Math.min(1, MAX_COVER_EDGE / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const context = canvas.getContext('2d');
+    if (!context) return file;
+
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.78));
+    if (!blob) return file;
+    return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
 
 export function AdminPage() {
   const [name, setName] = useState('');
@@ -177,11 +205,12 @@ export function AdminPage() {
                         className="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-slate-950 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white"
                         type="file"
                         accept="image/*"
-                        onChange={(event) => {
+                        onChange={async (event) => {
                           const file = event.target.files?.[0] || null;
+                          const cover = file ? await compressCover(file) : null;
                           updateWork(index, {
-                            cover: file,
-                            preview: file ? URL.createObjectURL(file) : '',
+                            cover,
+                            preview: cover ? URL.createObjectURL(cover) : '',
                           });
                         }}
                       />

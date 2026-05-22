@@ -42,6 +42,7 @@ export class ApiError extends Error {
 
 const SUBMISSIONS_COLLECTION = process.env.FIREBASE_SUBMISSIONS_COLLECTION || "designerSubmissions";
 const MAX_FILE_SIZE = 8 * 1024 * 1024;
+const MAX_INLINE_COVER_SIZE = 900 * 1024;
 let resolvedBucketName: string | null = null;
 
 function parseServiceAccount() {
@@ -211,6 +212,12 @@ async function uploadCover(file: UploadedCover) {
         throw error;
       }
     }
+  }
+
+  if (file.buffer.byteLength <= MAX_INLINE_COVER_SIZE) {
+    return {
+      coverUrl: `data:${file.mimeType};base64,${file.buffer.toString("base64")}`,
+    };
   }
 
   throw lastError || new ApiError(503, "Firebase Storage bucket is not configured");
