@@ -46,7 +46,7 @@ export async function createSubmission(formData: FormData) {
 }
 
 export async function deleteSubmission(id: string) {
-  const response = await fetch(`${API_BASE}/api/submissions/${id}`, {
+  const response = await fetch(`${API_BASE}/api/submissions?id=${encodeURIComponent(id)}`, {
     method: 'DELETE',
   });
   return parseResponse<{ ok: true }>(response);

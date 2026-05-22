@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createSubmissionFromInput, listSubmissions, sendApiError } from "./_shared.js";
+import { createSubmissionFromInput, deleteSubmissionById, listSubmissions, sendApiError } from "./_shared.js";
 import { parseMultipartForm } from "./_multipart.js";
 
 export const config = {
@@ -29,7 +29,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
-  res.setHeader("Allow", "GET, POST");
+  if (req.method === "DELETE") {
+    const id = Array.isArray(req.query.id) ? req.query.id[0] : req.query.id;
+    try {
+      res.status(200).json(await deleteSubmissionById(id || ""));
+    } catch (error) {
+      sendApiError(res, error);
+    }
+    return;
+  }
+
+  res.setHeader("Allow", "GET, POST, DELETE");
   res.status(405).json({ error: "Method not allowed" });
 }
-
