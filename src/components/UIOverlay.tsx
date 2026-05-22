@@ -1,4 +1,4 @@
-import { Move, MousePointer2, Globe2, X } from 'lucide-react';
+import { Gauge, Globe2 } from 'lucide-react';
 import { useLanguage } from '../store/LanguageContext';
 import { useEffect, useState } from 'react';
 
@@ -8,6 +8,7 @@ export function UIOverlay() {
   const [routeStarted, setRouteStarted] = useState(false);
   const [routeEnded, setRouteEnded] = useState(false);
   const [routePaused, setRoutePaused] = useState(false);
+  const [routeSpeed, setRouteSpeed] = useState(1);
 
   useEffect(() => {
     const onRouteEnd = () => {
@@ -25,6 +26,11 @@ export function UIOverlay() {
       window.removeEventListener('route-resumed', onRouteResumed);
     };
   }, []);
+
+  function updateRouteSpeed(nextSpeed: number) {
+    setRouteSpeed(nextSpeed);
+    window.dispatchEvent(new CustomEvent('route-speed-change', { detail: nextSpeed }));
+  }
 
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none flex flex-col justify-between z-10 text-slate-200 font-sans">
@@ -55,6 +61,34 @@ export function UIOverlay() {
            <span className="text-[10px] font-mono text-emerald-500/80 uppercase tracking-tighter">{t('desc')}</span>
         </div>
       </header>
+
+      <section className="absolute right-6 bottom-20 z-20 w-[min(18rem,calc(100vw-3rem))] rounded-lg border border-white/10 bg-slate-950/80 px-4 py-3 shadow-2xl backdrop-blur-xl pointer-events-auto">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <Gauge className="h-4 w-4 flex-none text-cyan-300" />
+            <span className="truncate text-[10px] font-mono uppercase tracking-[0.22em] text-slate-300">
+              {t('speedLabel')}
+            </span>
+          </div>
+          <span className="rounded border border-cyan-300/25 bg-cyan-400/10 px-2 py-1 text-[10px] font-mono font-bold text-cyan-100">
+            {routeSpeed.toFixed(2)}x
+          </span>
+        </div>
+        <input
+          aria-label={t('speedLabel')}
+          className="mt-3 h-2 w-full accent-cyan-300"
+          min="0.25"
+          max="3"
+          step="0.05"
+          type="range"
+          value={routeSpeed}
+          onChange={(event) => updateRouteSpeed(Number(event.target.value))}
+        />
+        <div className="mt-2 flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">
+          <span>{t('speedSlow')}</span>
+          <span>{t('speedFast')}</span>
+        </div>
+      </section>
 
       <main className="relative flex-1 flex pointer-events-none animate-fade-in-up">
         {showGuide ? (

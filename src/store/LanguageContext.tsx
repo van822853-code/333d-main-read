@@ -31,6 +31,9 @@ const translations = {
     startRoute: 'Start Route',
     restartRoute: 'Restart Route',
     routeAuto: 'Automatic route motion; drag and scroll to look around.',
+    speedLabel: 'Route Speed',
+    speedSlow: 'Slow',
+    speedFast: 'Fast',
     dismiss: 'Dismiss',
   },
   zh: {
@@ -55,6 +58,9 @@ const translations = {
     startRoute: '开始',
     restartRoute: '重新开始',
     routeAuto: '路线自动前进，拖拽滚轮可自由视角。',
+    speedLabel: '路线速度',
+    speedSlow: '慢',
+    speedFast: '快',
     dismiss: '关闭',
   },
   ja: {
@@ -79,6 +85,9 @@ const translations = {
     startRoute: '開始',
     restartRoute: '再開',
     routeAuto: '自動でルートが移動します。ドラッグとスクロールで自由に視点を変更できます。',
+    speedLabel: 'ルート速度',
+    speedSlow: '低速',
+    speedFast: '高速',
     dismiss: '閉じる',
   },
   ko: {
@@ -103,6 +112,9 @@ const translations = {
     startRoute: '시작',
     restartRoute: '다시 시작',
     routeAuto: '자동으로 경로가 움직입니다. 드래그와 스크롤로 자유롭게 시점을 변경할 수 있습니다.',
+    speedLabel: '경로 속도',
+    speedSlow: '느림',
+    speedFast: '빠름',
     dismiss: '닫기',
   }
 };

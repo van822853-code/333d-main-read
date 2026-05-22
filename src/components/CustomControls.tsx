@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { routeCurve } from '../data/route';
 
+const BASE_ROUTE_SPEED = 0.011;
+
 export function CustomControls() {
   const { camera } = useThree();
   const controlsRef = useRef<any>(null);
@@ -15,6 +17,7 @@ export function CustomControls() {
   const routeStarted = useRef(false);
   const routeEndSent = useRef(false);
   const routePaused = useRef(false);
+  const routeSpeed = useRef(1);
 
   useEffect(() => {
     camera.position.copy(routeCurve.points[0]);
@@ -71,10 +74,17 @@ export function CustomControls() {
       window.dispatchEvent(new CustomEvent('route-resumed'));
     };
 
+    const handleSpeedChange = (event: Event) => {
+      const nextSpeed = (event as CustomEvent<number>).detail;
+      if (typeof nextSpeed !== 'number' || Number.isNaN(nextSpeed)) return;
+      routeSpeed.current = THREE.MathUtils.clamp(nextSpeed, 0.25, 3);
+    };
+
     window.addEventListener('start-route', handleStartRoute);
     window.addEventListener('reset-view', handleResetView);
     window.addEventListener('route-pause', handlePauseRoute);
     window.addEventListener('route-resume', handleResumeRoute);
+    window.addEventListener('route-speed-change', handleSpeedChange);
 
     return () => {
       window.removeEventListener('keydown', onKeyDown, true);
@@ -83,6 +93,7 @@ export function CustomControls() {
       window.removeEventListener('reset-view', handleResetView);
       window.removeEventListener('route-pause', handlePauseRoute);
       window.removeEventListener('route-resume', handleResumeRoute);
+      window.removeEventListener('route-speed-change', handleSpeedChange);
     };
   }, [camera]);
 
@@ -95,7 +106,7 @@ export function CustomControls() {
         return;
       }
 
-      routeProgress.current = Math.min(1, routeProgress.current + delta * 0.011);
+      routeProgress.current = Math.min(1, routeProgress.current + delta * BASE_ROUTE_SPEED * routeSpeed.current);
       const currentPoint = routeCurve.getPoint(routeProgress.current);
       const nextPoint = routeCurve.getPoint(Math.min(1, routeProgress.current + 0.04));
       camera.position.copy(currentPoint);

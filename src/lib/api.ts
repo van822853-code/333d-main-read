@@ -17,7 +17,7 @@ export interface ExhibitionWork extends SubmittedWork {
   submissionId: string;
 }
 
-export const API_BASE = import.meta.env.VITE_API_BASE || 'http://127.0.0.1:3102';
+export const API_BASE = import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? 'http://127.0.0.1:3102' : '');
 
 async function parseResponse<T>(response: Response): Promise<T> {
   const data = await response.json().catch(() => null);
