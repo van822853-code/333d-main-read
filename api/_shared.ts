@@ -266,13 +266,16 @@ export async function createSubmissionFromInput(
     if (!url || !file) continue;
 
     const uploaded = await uploadCover(file);
-    works.push({
+    const work: SubmittedWork = {
       id: crypto.randomUUID(),
       url,
       coverUrl: uploaded.coverUrl,
-      storagePath: uploaded.storagePath,
       createdAt: new Date().toISOString(),
-    });
+    };
+    if (uploaded.storagePath) {
+      work.storagePath = uploaded.storagePath;
+    }
+    works.push(work);
   }
 
   if (works.length === 0) {
