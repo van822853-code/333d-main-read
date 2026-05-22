@@ -11,7 +11,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:submission": "tsx scripts/smoke-submission.ts",
+    "test:storage": "tsx scripts/check-storage-buckets.ts"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
