@@ -110,6 +110,7 @@ function getStorageBucketName() {
 }
 
 function getStorageBucketCandidates() {
+  getAdminDb();
   const serviceAccount = parseServiceAccount();
   const projectId = getProjectId(serviceAccount);
   const configuredBucket = getStorageBucketName();
